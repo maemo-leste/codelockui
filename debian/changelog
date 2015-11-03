@@ -1,0 +1,447 @@
+codelockui (1:1.6.18) unstable; urgency=low
+
+  * Initial release of reverse engineered clone
+
+ -- Jonathan Wilson <jfwfreo@tpgi.com.au>  Mon,  2 Nov 2015 23:42:03 -0500
+
+codelockui (1:1.6.17+0m5) unstable; urgency=low
+
+  * This entry has been added by BIFH queue processor
+    Suffix +0m5 added to package revision
+
+ -- Attiq Malik <ext-attiq.1.malik@nokia.com>  Tue, 10 Nov 2009 14:38:31 +0200
+
+codelockui (1:1.6.17) unstable; urgency=low
+
+  * Fixes: NB#144122 Array index out of bounds - found by Coverity
+      Patch by: Alexander Ponizovkin
+
+ -- Tuomo Tanskanen <ext-tuomo.1.tanskanen@nokia.com>  Fri, 06 Nov 2009 14:42:50 +0200
+
+codelockui (1:1.6.16) unstable; urgency=low
+
+  * Fixes: NB#140318 Implement API for setting max code length
+    Up the maximum allowed length to 20, keep default to 10 
+
+ -- Tuomo Tanskanen <ext-tuomo.1.tanskanen@nokia.com>  Tue, 20 Oct 2009 09:46:49 +0300
+
+codelockui (1:1.6.15) unstable; urgency=low
+
+  * Fixes: NB#123333 User should be asked new code for locking if it was
+    changed in Device lock CPA (partial fix)
+
+ -- Chandra Vanipenta <ext-chandra.1.vanipenta@nokia.com>  Wed,  7 Oct 2009 11:41:13 +0300
+
+codelockui (1:1.6.14) unstable; urgency=low
+
+  [ Alexander Ponizovkin ]
+  * Fixes: NB#140197 Codelock ui uses G_TYPE_INSTANCE_GET_PRIVATE
+
+  [ Tuomo Tanskanen ]
+  * Fixes: NB#140318 Implement API for setting maximum code length
+
+ -- Tuomo Tanskanen <ext-tuomo.1.tanskanen@nokia.com>  Thu, 24 Sep 2009 10:50:55 +0300
+
+codelockui (1:1.6.13) unstable; urgency=low
+
+  * Fixes: NB#92408 Deleting first digit in devicelock or pinquery reveals 
+   the deleted digit
+
+ -- Alexander Ponizovkin <ext-alexander.ponizovkin@nokia.com>  Tue,  8 Sep 2009 10:59:24 +0300
+
+codelockui (1:1.6.12) unstable; urgency=low
+
+  * Fixes: NB#131646: Done button text is visible only after entering lock code
+
+ -- Tuomo Tanskanen <ext-tuomo.1.tanskanen@nokia.com>  Fri, 28 Aug 2009 15:18:14 +0300
+
+codelockui (1:1.6.11) unstable; urgency=low
+
+   * Fixes: NB#119084 Emergency number not visible in text entry
+    filed of code lock dialog when call handling dialog is displayed
+
+ -- Chandra Vanipenta <ext-chandra.1.vanipenta@nokia.com>  Thu,  6 Aug 2009 20:03:47 +0300
+
+codelockui (1:1.6.10) unstable; urgency=low
+
+  * Fixes: NB#130118 Numbers and letters in lock & pin code dialog to be centered
+  * Fixes: NB#131404 Lowercase letters in pin/lock code dialogs
+
+ -- Tuomo Tanskanen <ext-tuomo.1.tanskanen@nokia.com>  Wed, 05 Aug 2009 13:12:00 +0300
+
+codelockui (1:1.6.9) unstable; urgency=low
+
+  * Fixes: NB#124934 Themable background for pin code/lock query
+
+ -- Tuomo Tanskanen <ext-tuomo.1.tanskanen@nokia.com>  Mon, 03 Aug 2009 09:59:09 +0300
+
+codelockui (1:1.6.8) unstable; urgency=low
+
+  * Cleanup
+
+ -- David Weinehall <david.weinehall@nokia.com>  Thu, 16 Jul 2009 14:39:35 +0300
+
+codelockui (1:1.6.7) unstable; urgency=low
+
+  * Fixes: NB#126510 Wrong banner used for mismatching codes
+
+ -- Tuomo Tanskanen <ext-tuomo.1.tanskanen@nokia.com>  Fri, 10 Jul 2009 12:17:58 +0300
+
+codelockui (1:1.6.6) unstable; urgency=low
+
+  * Fixes: NB#126510 Wrong banner used for mismatching codes
+
+ -- Tuomo Tanskanen <ext-tuomo.1.tanskanen@nokia.com>  Tue, 07 Jul 2009 13:29:26 +0300
+
+codelockui (1:1.6.5) unstable; urgency=low
+
+  * Fixes: NB#125458 Pin code query skip/cancel button not themed
+
+ -- Tuomo Tanskanen <ext-tuomo.1.tanskanen@nokia.com>  Tue, 30 Jun 2009 12:50:15 +0300
+
+codelockui (1:1.6.4) unstable; urgency=low
+
+  * Fixes: NB#108730 Layout of the lock code needs some visual changes
+  * Fixes: NB#124089 Submit button overlaps zero button
+
+ -- Tuomo Tanskanen <ext-tuomo.1.tanskanen@nokia.com>  Thu, 25 Jun 2009 10:09:47 +0300
+
+codelockui (1:1.6.2) unstable; urgency=low
+
+  * Fixes: NB#108730 Layout of the lock code needs some visual changes
+  * Corrected font sizes for entry + button numerics
+  * Get the emergency numbers correctly from CSD
+
+ -- Tuomo Tanskanen <ext-tuomo.1.tanskanen@nokia.com>  Fri, 12 Jun 2009 09:15:53 +0300
+
+codelockui (1:1.6.1) unstable; urgency=low
+
+  * Fixes: NB#112542 Info banner not displayed if If emergency call fails in
+    Lock dialog
+  * Fixes: NB#119075 User is not returned to enter lock code dialog when
+    emergency call has ended or suspended.
+  * Fixes: NB#119084 Emergency number not visible in text entry filed of code
+    lock dialog when call handling dialog is displayed
+
+ -- Chandra Vanipenta <ext-chandra.1.vanipenta@nokia.com>  Sun, 31 May 2009 18:54:32 +0300
+
+codelockui (1:1.6.0) unstable; urgency=low
+
+  * Fixes: NB#109686 Order of PIN query buttons is incorrect
+  * Fixes: NB#112544 unlocalized string "attempting to establish emergency
+    call"
+
+ -- Chandra Vanipenta <ext-chandra.1.vanipenta@nokia.com>  Mon, 11 May 2009 19:46:07 +0300
+
+codelockui (1:1.5.8) unstable; urgency=low
+
+  [David Weinehall]
+  * Fix process leak
+
+ -- Maria Starodubtseva <ext-maria.starodubtseva@nokia.com>  Tue, 24 Mar 2009 10:23:39 +0200
+
+codelockui (1:1.5.7) unstable; urgency=low
+
+  * UI improvements
+  * Do not use illegal logical id
+
+ -- Maria Starodubtseva <ext-maria.starodubtseva@nokia.com>  Thu, 22 Jan 2009 10:19:53 +0200
+
+codelockui (1:1.5.6) unstable; urgency=low
+
+  * Finetune keypad ui
+  * Install .so link with development package
+
+ -- Maria Starodubtseva <ext-maria.starodubtseva@nokia.com>  Wed, 26 Nov 2008 15:36:30 +0200
+
+codelockui (1:1.5.5) unstable; urgency=low
+
+  * Use libdevlock-bin instead of MCE to validate/change device lock code
+  * Fix various lintian errors
+
+ -- David Weinehall <david.weinehall@nokia.com>  Fri, 21 Nov 2008 13:06:13 +0200
+
+codelockui (1:1.5.4) unstable; urgency=low
+
+  * New method to enable optional Cancel button
+  * Publish CluiCodeDialog library class
+  * UI improvements
+
+ -- Maria Starodubtseva <ext-maria.starodubtseva@nokia.com>  Fri, 24 Oct 2008 15:34:32 +0300
+
+codelockui (1:1.5.3) unstable; urgency=low
+
+  * Fixes in emergency call support
+  * Cleanup; better modules structure
+
+ -- Maria Starodubtseva <ext-maria.starodubtseva@nokia.com>  Mon, 20 Oct 2008 19:42:34 +0300
+
+codelockui (1:1.5.2) unstable; urgency=low
+
+  * Emergency call support
+  * UI improvements
+
+ -- Maria Starodubtseva <ext-maria.starodubtseva@nokia.com>  Tue, 14 Oct 2008 11:24:42 +0300
+
+codelockui (1:1.5.1) unstable; urgency=low
+
+  * UI improvements
+  * handling of outside-dialog button-press events
+
+ -- Maria Starodubtseva <ext-maria.starodubtseva@nokia.com>  Wed, 17 Sep 2008 16:54:23 +0300
+
+codelockui (1:1.5.0) unstable; urgency=low
+
+  * Use new keypad widget implementation
+  * Bits of cleanup
+
+ -- Maria Starodubtseva <ext-maria.starodubtseva@nokia.com>  Wed, 10 Sep 2008 12:23:53 +0300
+
+codelockui (1:1.4.3) unstable; urgency=low
+
+  * Make final infoprints to parent (if any). Fixes: NB#61933, NB#61936
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Thu, 28 Jun 2007 13:42:21 +0300
+
+codelockui (1:1.4.2) unstable; urgency=low
+
+  * Use hildon-help instead of deprecated osso-help.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Mon,  2 Apr 2007 15:55:04 +0300
+
+codelockui (1:1.4.1) unstable; urgency=low
+
+  * Properly indent source.
+  * Handle esc key.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Mon,  2 Apr 2007 13:36:28 +0300
+
+codelockui (1:1.4.0) unstable; urgency=low
+
+  * Rename package
+  * Use HildonCodeDialog
+  * Remove deprecated bits
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Tue, 27 Feb 2007 15:05:05 +0200
+
+codelockui (1.3.5) unstable; urgency=low
+
+  * Fix domain for max. chars reached. Fixes: NB#42445
+  * Don't depend on mce to remove circular dependency.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Mon,  9 Oct 2006 10:23:11 +0300
+
+codelockui (1.3.4) unstable; urgency=low
+
+  * Don't link against cal.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Thu,  1 Jun 2006 10:04:04 +0300
+
+codelockui (1.3.3) unstable; urgency=low
+
+  * Use mce via dbus instead of direct cal access.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Wed, 31 May 2006 18:25:38 +0300
+
+codelockui (1.3.2) unstable; urgency=low
+
+  * Bug N#31144: Remove libtool archive from -dev package.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Wed, 31 May 2006 11:55:25 +0300
+
+codelockui (1.3.1) unstable; urgency=low
+
+  * Bug N#30318: Fix more l10n domains.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Tue, 23 May 2006 13:27:16 +0300
+
+codelockui (1.3.0) unstable; urgency=low
+
+  * Bug N#27535: Fix l10n domains.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Thu, 11 May 2006 14:49:45 +0300
+
+codelockui (1.2.5-1) unstable; urgency=low
+
+  * Even more new l10n packaging.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Fri, 24 Mar 2006 11:33:08 +0200
+
+codelockui (1.2.4-1) unstable; urgency=low
+
+  * Require new enough hildon-libs.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Wed,  8 Mar 2006 12:52:43 +0200
+
+codelockui (1.2.3-1) unstable; urgency=low
+
+  * Update .pc -file to include hildon-libs instead of hildon-lgpl.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Wed,  8 Mar 2006 12:08:04 +0200
+
+codelockui (1.2.2-1) unstable; urgency=low
+
+  * New l10n packaging.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Tue, 28 Feb 2006 15:14:40 +0200
+
+codelockui (1.2.1-1) unstable; urgency=low
+
+  * Bug #22257@Nokia: Fix the help content id in change code query.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Tue, 10 Jan 2006 12:03:38 +0200
+
+codelockui (1.2.0-1) unstable; urgency=low
+
+  * Build with plus rootstrap.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Tue,  3 Jan 2006 18:38:36 +0200
+
+codelockui (1.0.42-1) unstable; urgency=low
+
+  * Remove unnecessary dependencies.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Thu,  1 Dec 2005 15:38:57 +0200
+
+codelockui (1.0.41-1) unstable; urgency=low
+
+  * Re-fix bug #20965@Nokia. Handle keys a bit better.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Wed,  2 Nov 2005 15:32:21 +0200
+
+codelockui (1.0.40-1) unstable; urgency=low
+
+  * Bug #20965@Nokia: Fix HW key interaction.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Thu, 27 Oct 2005 14:53:02 +0300
+
+codelockui (1.0.39-1) unstable; urgency=low
+
+  * Fix another memory leak.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Tue, 18 Oct 2005 16:05:22 +0300
+
+codelockui (1.0.38-1) unstable; urgency=low
+
+  * Bug #20537: Fix memory leak.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Thu, 13 Oct 2005 13:33:43 +0300
+
+codelockui (1.0.37-2) unstable; urgency=low
+
+  * More of the same.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Fri,  7 Oct 2005 13:20:01 +0300
+
+codelockui (1.0.37-1) unstable; urgency=low
+
+  * Fix contact persons and changelog.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Fri,  7 Oct 2005 11:41:14 +0300
+
+codelockui (1.0.36-2) unstable; urgency=low
+
+  * Fix dev package dependencies.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Wed, 14 Sep 2005 15:53:17 +0300
+
+codelockui (1.0.36-1) unstable; urgency=low
+
+  * Use version numbered .so name for shlibs support.
+  * Fix a text entry clearing bug.
+  * Add conflicts to old versions of osso-applet-devicelock, osso-
+    systemui-devlock.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Fri,  9 Sep 2005 16:12:31 +0300
+
+codelockui (1.0.36-0) unstable; urgency=low
+
+  * Help icons fixed, rc w36
+
+ -- Tuomo Tanskanen <ext-tuomo.1.tanskanen@nokia.com>  Thu,  8 Sep 2005 14:23:46 +0300
+
+codelockui (1.0.35-2) unstable; urgency=low
+
+  * Fix some entry field clear problems.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Tue,  6 Sep 2005 13:40:41 +0300
+
+codelockui (1.0.35-1) unstable; urgency=low
+
+  * Fix wrong number showing position.
+
+ -- Santtu Lakkala <ext-santtu.1.lakkala@nokia.com>  Fri,  2 Sep 2005 17:17:53 +0300
+
+codelockui (1.0.35-0) unstable; urgency=low
+
+  * w35 release
+
+ -- Tuomo Tanskanen <ext-tuomo.1.tanskanen@nokia.com>  Thu,  1 Sep 2005 13:48:29 +0300
+
+codelockui (1.0.34-1) unstable; urgency=low
+
+  * l10n 4.0 dep
+
+ -- Tuomo Tanskanen <ext-tuomo.1.tanskanen@nokia.com>  Thu,  1 Sep 2005 13:46:41 +0300
+
+codelockui (1.0.34-0) unstable; urgency=low
+
+  * Tag
+
+ -- Tuomo Tanskanen <ext-tuomo.1.tanskanen@nokia.com>  Thu, 25 Aug 2005 14:07:34 +0300
+
+codelockui (1.0.33-1) unstable; urgency=low
+
+  * Removed libxtst
+
+ -- Tuomo Tanskanen <ext-tuomo.1.tanskanen@nokia.com>  Thu, 25 Aug 2005 10:09:54 +0300
+
+codelockui (1.0.33-0) unstable; urgency=low
+
+  * RC w33
+
+ -- Tuomo Tanskanen <ext-tuomo.1.tanskanen@nokia.com>  Thu, 18 Aug 2005 10:23:42 +0300
+
+codelockui (1.0.32-0) unstable; urgency=low
+
+  * Fixed to so, that the compiler accepts the code.
+  * Fixed #15033: Help icons missing from Security applet
+
+ -- Pablo Virolainen <ext-pablo.virolainen@nokia.com>  Thu, 18 Aug 2005 08:39:11 +0300
+
+codelockui (1.0.30-4) unstable; urgency=low
+
+  * Removed another of two intltool deps
+
+ -- Tuomo Tanskanen <ext-tuomo.1.tanskanen@nokia.com>  Mon,  8 Aug 2005 17:52:46 +0300
+
+codelockui (1.0.30-3) unstable; urgency=low
+
+  * added libxtst-dev to source-dep
+
+ -- Tuomo Tanskanen <ext-tuomo.1.tanskanen@nokia.com>  Mon,  8 Aug 2005 17:36:36 +0300
+
+codelockui (1.0.30-2) unstable; urgency=low
+
+  * It was 3.0 afterall :/
+
+ -- Tuomo Tanskanen <ext-tuomo.1.tanskanen@nokia.com>  Mon,  8 Aug 2005 16:53:46 +0300
+
+codelockui (1.0.30-1) unstable; urgency=low
+
+  * l10n 3.1
+
+ -- Tuomo Tanskanen <ext-tuomo.1.tanskanen@nokia.com>  Mon,  8 Aug 2005 16:31:33 +0300
+
+codelockui (1.0.30-0) unstable; urgency=low
+
+  * New l10n process
+
+ -- Tuomo Tanskanen <ext-tuomo.1.tanskanen@nokia.com>  Mon,  8 Aug 2005 16:03:45 +0300
+
+codelockui (1.0.27-0) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Pablo Virolainen <ext-pablo.virolainen@nokia.com>  Wed, 22 Jun 2005 15:32:20 +0300
+

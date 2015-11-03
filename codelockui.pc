@@ -1,0 +1,11 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: codelockui library
+Description: codelockui library
+Requires: libosso gtk+-2.0 hildon-1 >= 0.9.9
+Version: 1.6.17
+Libs: -L${libdir} -lcodelockui
+Cflags: -I${includedir}

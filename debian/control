@@ -1,0 +1,29 @@
+Source: codelockui
+Section: libs
+Priority: extra
+Maintainer: Jonathan Wilson <jfwfreo@tpgi.com.au>
+Build-Depends: debhelper (>= 5), cdbs, libhildon1-dev, libgtk2.0-dev, libglib2.0-dev, libdbus-glib-1-dev, libosso-dev
+
+Package: libcodelockui1
+Section: libs
+Priority: extra
+Architecture: any
+Depends: ${shlibs:Depends}, osso-icons, osso-system-lock-l10n-mr0 | osso-system-lock-l10n-mr, libdevlock-bin (>= 1.0.4)
+Description: A code lock UI library
+ This package contains the run-time library for code lock UI.
+
+Package: libcodelockui1-dev
+Section: devel
+Priority: extra
+Architecture: all
+Depends: libcodelockui1 (= ${binary:Version}), pkg-config
+Description: Headers for a code lock ui library.
+ This package contains headers for using the code lock UI library.
+
+Package: libcodelockui1-dbg
+Section: devel
+Priority: extra
+Architecture: any
+Depends: libcodelockui1 (= ${binary:Version}), pkg-config
+Description: Debug symbols for code lock UI library
+ Debug symbols for code lock UI library.
