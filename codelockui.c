@@ -24,6 +24,7 @@
 #include <sys/wait.h>
 #include <stdarg.h>
 #include <string.h>
+#include <libintl.h>
 #include "codelockui.h"
 #include "clui-code-dialog.h"
 
@@ -213,7 +214,36 @@ static void codelock_response_signal(GtkDialog *dialog, gint response_id, CodeLo
 
 gboolean codelock_password_change(CodeLockUI *ui, CodeLockChangeFunc func)
 {
-	//todo
+	if (ui)
+	{
+		ui->response_signal_handle = g_signal_connect_data(G_OBJECT(ui->dialog),"response",G_CALLBACK(codelock_response_signal),ui,NULL,0);
+		codelock_reset_dialog(osso_context,ui,dcgettext("osso-system-lock", "secu_ti_changelock_1", 5));
+		ui->passwd_idx = 0;
+		ui->changefunc = func;
+		if (func)
+		{
+			gint idx = 0;
+			gint response = -1;
+			while (idx <= 3 || response == -4)
+			{
+				response = gtk_dialog_run(GTK_DIALOG(ui->dialog));
+				if (response != -6 && response != -4)
+				{
+					idx = ui->passwd_idx;
+					if (idx != 3)
+					{
+						continue;
+					}
+				}
+				g_signal_handler_disconnect(G_OBJECT(ui->dialog),ui->response_signal_handle);
+				ui->response_signal_handle = 0;
+				return FALSE;
+			}
+			g_signal_handler_disconnect(G_OBJECT(ui->dialog),ui->response_signal_handle);
+			ui->response_signal_handle = 0;
+			return TRUE;
+		}
+	}
 	return FALSE;
 }
 
@@ -305,8 +335,89 @@ void codelock_destroy_dialog(CodeLockUI *ui)
 
 gboolean utils_dbus_send(const char *bus_name, const char *path, const char *interface, const char *method, gboolean (*callback)(DBusMessage *, CodeLockUI *), CodeLockUI *ui, DBusPendingCallNotifyFunction pending_call_notify, int first_arg_type, ...)
 {
-	//todo
-	return FALSE;
+	va_list va;
+	DBusError error;
+	gboolean res;
+	DBusPendingCall *pending_return;
+	va_start(va,first_arg_type);
+	if (!bus_name)
+	{
+		return FALSE;
+	}
+	dbus_error_init(&error);
+	DBusConnection *connection = dbus_bus_get_private(DBUS_BUS_SYSTEM, &error);
+	if (dbus_error_is_set(&error))
+	{
+		dbus_error_free(&error);
+		return FALSE;
+	}
+	DBusMessage *message = dbus_message_new_method_call(bus_name,path,interface,method);
+	if (message)
+	{
+		if (first_arg_type && !dbus_message_append_args_valist(message,first_arg_type,va))
+		{
+			res = FALSE;
+			goto label1;
+		}
+		if (callback)
+		{
+			dbus_error_init(&error);
+			DBusMessage *message2 = dbus_connection_send_with_reply_and_block(connection,message,-1,&error);
+			if (dbus_error_is_set(&error))
+			{
+				dbus_error_free(&error);
+				res = FALSE;
+				goto label1;
+			}
+			if (message2)
+			{
+				res = callback(message2,ui);
+				dbus_message_unref(message2);
+label1:
+				dbus_message_unref(message);
+				goto label2;
+			}
+label3:
+			res = 0;
+			goto label1;
+		}
+		if (pending_call_notify)
+		{
+			if (!dbus_connection_send_with_reply(connection,message,&pending_return,-1))
+			{
+				goto label3;
+			}
+			if (!pending_return)
+			{
+				goto label3;
+			}
+			dbus_connection_flush(connection);
+			if (!dbus_pending_call_set_notify(pending_return,pending_call_notify,NULL,NULL))
+			{
+				goto label3;
+			}
+		}
+		else
+		{
+			if (!dbus_connection_send(connection,message,NULL))
+			{
+				res = FALSE;
+				goto label1;
+			}
+			dbus_connection_flush(connection);
+		}
+		res = TRUE;
+		goto label1;
+	}
+	res = FALSE;
+label2:
+	if (dbus_error_is_set(&error))
+	{
+		dbus_error_free(&error);
+	}
+	dbus_connection_close(connection);
+	dbus_connection_unref(connection);
+	return res;
 }
 
 static void response_cb(GtkDialog *dialog, gint response_id, CodeLockUI *ui)
@@ -402,7 +513,7 @@ static gboolean _get_ephnumbers(CodeLockUI *ui)
 	return TRUE;
 }
 
-void input_cb(CodeLockUI *ui, unsigned char *pointer, gpointer user_data)
+void input_cb(CodeLockUI *ui, char *pointer, gpointer user_data)
 {
 	if (ui->entry_event_id)
 	{
@@ -437,9 +548,45 @@ gint _eph_input_state(const gchar *num_str)
 	return 2;
 }
 
-void eph_input_cb(CodeLockUI *ui, unsigned char *pointer, gpointer user_data)
+void eph_input_cb(CodeLockUI *ui, char *pointer, gpointer user_data)
 {
-	//todo
+	size_t len = strlen(eph_num);
+	if (pointer && *pointer != 0)
+	{
+		if (*pointer == 'B')
+		{
+			if (len <= 0)
+			{
+				eph_reset();
+			}
+			else
+			{
+				eph_num[len - 1] = 0;
+			}
+		}
+		else if (len < eph_len)
+		{
+			eph_num[len] = *pointer;
+			eph_num[len + 1] = 0;
+		}
+		ui->input_state = _eph_input_state(eph_num);
+		if (ui->input_state != 3)
+		{
+			goto label1;
+		}
+	}
+	else
+	{
+		ui->input_state = 0;
+		eph_reset();
+		if (ui->input_state != 3)
+		{
+label1:
+			clui_code_dialog_set_emergency_mode(CLUI_CODE_DIALOG(ui->dialog),FALSE);
+			return;
+		}
+	}
+	clui_code_dialog_set_emergency_mode(CLUI_CODE_DIALOG(ui->dialog),TRUE);
 }
 
 GtkWidget* codelock_create_dialog_help(CodeLockUI *ui,osso_context_t *osso,gint timeout,gboolean emergency_enabled)
