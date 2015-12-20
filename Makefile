@@ -8,11 +8,11 @@ clean:
 
 install:
 	install -d "$(DESTDIR)/usr/lib/"
-	install -m 755 libcodelockui.so.1.0.0 "$(DESTDIR)/usr/lib/"
+	install -m 644 libcodelockui.so.1.0.0 "$(DESTDIR)/usr/lib/"
 	ln -s libcodelockui.so.1.0.0 "$(DESTDIR)/usr/lib/libcodelockui.so.1"
-	install -d "$(DESTDIR)/usr/include/"
-	install -d  "$(DESTDIR)/usr/lib/pkgconfig"
 	ln -s libcodelockui.so.1 "$(DESTDIR)/usr/lib/libcodelockui.so"
+	install -d "$(DESTDIR)/usr/include/"
 	install -m 644 codelockui.h "$(DESTDIR)/usr/include/"
 	install -m 644 clui-code-dialog.h "$(DESTDIR)/usr/include/"
-	install -m 644 codelockui.pc "$(DESTDIR)/usr/lib/pkgconfig"
+	install -d "$(DESTDIR)/usr/lib/pkgconfig"
+	install -m 644 codelockui.pc "$(DESTDIR)/usr/lib/pkgconfig/"
