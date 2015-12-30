@@ -393,8 +393,64 @@ static GtkWidget *
 clui_code_dialog_create_number_button(const gchar *number, const gchar *letters,
                                       CluiCodeDialog *data)
 {
-  //todo
-  return NULL;
+  GObject *vbox;
+  GObject *align;
+  GObject *label_number;
+  GObject *label_letters;
+  GObject *button;
+  PangoFontDescription *font;
+
+  button = g_object_new(GTK_TYPE_BUTTON,
+                        "focus-on-click", FALSE,
+                        "name", "hildon-dtmf-landscape-dialpad-button",
+                        NULL);
+
+  gtk_button_set_focus_on_click(GTK_BUTTON(button), FALSE);
+  GTK_OBJECT(button)->flags &= ~GTK_CAN_FOCUS;
+
+  if (number)
+    g_object_set_data_full(G_OBJECT(button), "digit", g_strdup(number),
+                           &g_free);
+
+  vbox = gtk_vbox_new(0, 0);
+  align = g_object_new(GTK_TYPE_ALIGNMENT, NULL);
+
+  gtk_alignment_set_padding(GTK_ALIGNMENT(align), 4u, 4u, 8u, 8u);
+
+  label_number = g_object_new(GTK_TYPE_LABEL,
+                              "xalign", 0.5,
+                              "yalign", 0.0,
+                              "label", number,
+                              "height-request", 40,
+                              NULL);
+
+  font = pango_font_description_from_string("Nokia Sans Bold 35px");
+  gtk_widget_modify_font(label_number, font);
+  pango_font_description_free(font);
+
+  label_letters = g_object_new(GTK_TYPE_LABEL,
+                               "xalign", 0.5,
+                               "yalign", 1.0,
+                               "label", letters,
+                               "height-request", 30,
+                               NULL);
+
+  hildon_helper_set_logical_font(label_letters, "SystemFont");
+  hildon_helper_set_logical_color(label_letters, GTK_RC_FG, 0,
+                                  "SecondaryTextColor");
+  hildon_helper_set_logical_color(label_letters, GTK_RC_FG, GTK_STATE_PRELIGHT,
+                                  "SecondaryTextColor");
+  g_signal_connect_data(G_OBJECT(button), "clicked",
+                        G_CALLBACK(clui_code_dialog_button_clicked),
+                        data, 0, 0);
+  gtk_box_pack_start_defaults(GTK_BOX(vbox), label_number);
+  gtk_box_pack_start_defaults(GTK_BOX(vbox), label_letters);
+  gtk_container_add(GTK_CONTAINER(align), vbox);
+  gtk_container_add(GTK_CONTAINER(button), align);
+  gtk_widget_set_size_request(button, 130, 90);
+  gtk_widget_show_all(button);
+
+  return (GtkWidget *)button;
 }
 
 static GObject *
@@ -405,7 +461,8 @@ clui_code_dialog_build(GType type, guint n_construct_properties,
   return NULL;
 }
 
-void clui_code_dialog_class_init(CluiCodeDialogClass *clui)
+void
+clui_code_dialog_class_init(CluiCodeDialogClass *clui)
 {
   GObjectClass *object = G_OBJECT_CLASS(clui);
   GtkWidgetClass *widget = GTK_WIDGET_CLASS(clui);
@@ -421,7 +478,8 @@ void clui_code_dialog_class_init(CluiCodeDialogClass *clui)
   widget->unrealize = clui_code_dialog_unrealize;
   GTK_OBJECT_CLASS(clui)->destroy = clui_code_dialog_destroy;
   input_signal = g_signal_new("input", CLUI_TYPE_CODE_DIALOG, G_SIGNAL_RUN_LAST,
-                              0,NULL,NULL,(GSignalCMarshaller)&g_cclosure_marshal_VOID__POINTER,
+                              0, NULL, NULL,
+                              (GSignalCMarshaller)&g_cclosure_marshal_VOID__POINTER,
                               G_TYPE_NONE, 1, G_TYPE_POINTER);
   g_object_class_install_property(object, 1,
                                   g_param_spec_boolean("emergency", "", "", 0,
