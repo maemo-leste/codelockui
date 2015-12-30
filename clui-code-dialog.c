@@ -20,7 +20,9 @@
  *
  */
 #include <hildon/hildon-banner.h>
+#include <hildon/hildon-helper.h>
 #include <libintl.h>
+
 #include "codelockui.h"
 #include "clui-code-dialog.h"
 
@@ -180,7 +182,7 @@ clui_code_dialog_get_code(CluiCodeDialog *dialog)
 {
   CluiCodeDialogPrivate *priv;
 
-  g_return_if_fail(CLUI_IS_CODE_DIALOG(dialog));
+  g_return_val_if_fail(CLUI_IS_CODE_DIALOG(dialog), NULL);
 
   priv = CLUI_CODE_DIALOG(dialog)->priv;
   g_assert(priv);
@@ -393,11 +395,11 @@ static GtkWidget *
 clui_code_dialog_create_number_button(const gchar *number, const gchar *letters,
                                       CluiCodeDialog *data)
 {
-  GObject *vbox;
-  GObject *align;
-  GObject *label_number;
-  GObject *label_letters;
-  GObject *button;
+  GtkWidget *vbox;
+  GtkWidget *align;
+  GtkWidget *label_number;
+  GtkWidget *label_letters;
+  GtkWidget *button;
   PangoFontDescription *font;
 
   button = g_object_new(GTK_TYPE_BUTTON,
