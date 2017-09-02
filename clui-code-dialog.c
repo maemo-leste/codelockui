@@ -46,7 +46,7 @@ G_DEFINE_TYPE(CluiCodeDialog,clui_code_dialog,GTK_TYPE_DIALOG);
 
 void
 clui_code_dialog_set_cancel_button_with_label(CluiCodeDialog *dialog,
-                                              const gchar *text)
+					      const gchar *text)
 {
   CluiCodeDialogPrivate *priv;
 
@@ -74,7 +74,7 @@ clui_code_dialog_set_cancel_button_with_label(CluiCodeDialog *dialog,
 
 void
 clui_code_dialog_set_max_code_length(CluiCodeDialog *dialog,
-                                     guint max_code_length)
+				     guint max_code_length)
 {
   CluiCodeDialogPrivate *priv;
 
@@ -91,7 +91,7 @@ clui_code_dialog_set_max_code_length(CluiCodeDialog *dialog,
 
 void
 clui_code_dialog_set_emergency_mode(CluiCodeDialog *dialog,
-                                    gboolean setting)
+				    gboolean setting)
 {
   CluiCodeDialogPrivate *priv;
 
@@ -108,7 +108,7 @@ clui_code_dialog_set_emergency_mode(CluiCodeDialog *dialog,
     if (!GTK_WIDGET_MAPPED(priv->emergency_call_button))
     {
       gtk_box_pack_start(GTK_BOX(priv->vbox),priv->emergency_call_button, 0, 1,
-                         0);
+			 0);
       gtk_entry_set_visibility(GTK_ENTRY(priv->code_entry), 1);
     }
   }
@@ -117,7 +117,7 @@ clui_code_dialog_set_emergency_mode(CluiCodeDialog *dialog,
     if (GTK_WIDGET_MAPPED(priv->emergency_call_button))
     {
       gtk_container_remove(GTK_CONTAINER(priv->vbox),
-                           priv->emergency_call_button);
+			   priv->emergency_call_button);
       gtk_entry_set_visibility(GTK_ENTRY(priv->code_entry), 0);
     }
   }
@@ -140,7 +140,7 @@ clui_code_dialog_set_ok_button_style(CluiCodeDialog *dialog)
       GTK_WIDGET_PARENT_SENSITIVE(priv->ok_button))
   {
     g_object_set(G_OBJECT(priv->ok_button), "name", "hildon-dtmf-back-button",
-                 NULL);
+		 NULL);
   }
   else
     g_object_set(G_OBJECT(priv->ok_button), "name", NULL, NULL);
@@ -148,7 +148,7 @@ clui_code_dialog_set_ok_button_style(CluiCodeDialog *dialog)
 
 void
 clui_code_dialog_set_input_sensitive(CluiCodeDialog *dialog,
-                                     gboolean sensitive)
+				     gboolean sensitive)
 {
   //todo
 }
@@ -194,14 +194,14 @@ GtkWidget *
 clui_code_dialog_new(gboolean emergency_enabled)
 {
   return (GtkWidget *)g_object_new(CLUI_TYPE_CODE_DIALOG, "emergency",
-                                   emergency_enabled, NULL);
+				   emergency_enabled, NULL);
 }
 
 static void
 clui_code_dialog_init(CluiCodeDialog *dialog)
 {
   dialog->priv = G_TYPE_INSTANCE_GET_PRIVATE(dialog, CLUI_TYPE_CODE_DIALOG,
-                                             CluiCodeDialogPrivate);
+					     CluiCodeDialogPrivate);
 }
 
 static void
@@ -225,7 +225,7 @@ clui_code_dialog_realize(GtkWidget *widget)
     GTK_WIDGET_CLASS(clui_code_dialog_parent_dialog)->realize(widget);
 
   gtk_im_context_set_client_window(GTK_IM_CONTEXT(priv->im_context),
-                                   GTK_WIDGET(widget)->window);
+				   GTK_WIDGET(widget)->window);
   gtk_im_context_focus_in(priv->im_context);
 }
 
@@ -258,7 +258,7 @@ clui_code_dialog_destroy(GtkObject *object)
 
 static void
 clui_code_dialog_set_property(GObject *object, guint property_id,
-                              const GValue *value, GParamSpec *pspec)
+			      const GValue *value, GParamSpec *pspec)
 {
   CluiCodeDialogPrivate *priv = CLUI_CODE_DIALOG(object)->priv;
 
@@ -268,7 +268,7 @@ clui_code_dialog_set_property(GObject *object, guint property_id,
 
 static void
 clui_code_dialog_get_property(GObject *object, guint property_id, GValue *value,
-                              GParamSpec *pspec)
+			      GParamSpec *pspec)
 {
   CluiCodeDialogPrivate *priv = CLUI_CODE_DIALOG(object)->priv;
 
@@ -284,8 +284,8 @@ clui_code_dialog_emit_input_signal(CluiCodeDialog *dialog, char *string)
 
 void
 clui_code_dialog_insert_text(GtkEditable *editable, gchar *new_text,
-                             gint new_text_length, gint *position,
-                             CluiCodeDialog *user_data)
+			     gint new_text_length, gint *position,
+			     CluiCodeDialog *user_data)
 {
   CluiCodeDialog *dialog = CLUI_CODE_DIALOG(user_data);
   CluiCodeDialogPrivate *priv = CLUI_CODE_DIALOG(user_data)->priv;
@@ -298,8 +298,8 @@ clui_code_dialog_insert_text(GtkEditable *editable, gchar *new_text,
   if (strlen == entrylen)
   {
     hildon_banner_show_information(GTK_WIDGET(dialog), NULL,
-                                   dgettext("hildon-common-strings",
-                                            "ckdg_ib_maximum_characters_reached"));
+				   dgettext("hildon-common-strings",
+					    "ckdg_ib_maximum_characters_reached"));
   }
   else if (!strlen)
     gtk_widget_set_sensitive(priv->ok_button,1);
@@ -321,7 +321,7 @@ clui_code_dialog_insert_text(GtkEditable *editable, gchar *new_text,
 
 static void
 clui_code_dialog_im_commit(GtkIMContext *imcontext,
-                           gchar *arg1, CluiCodeDialog *dialog)
+			   gchar *arg1, CluiCodeDialog *dialog)
 {
   CluiCodeDialogPrivate *priv = CLUI_CODE_DIALOG(dialog)->priv;
   g_assert(priv);
@@ -379,8 +379,8 @@ clui_code_dialog_button_clicked(GtkButton *button, CluiCodeDialog *data)
 
       if (!*code || (priv->ok_button_disabled = TRUE, !*code))
       {
-        gtk_widget_set_sensitive(priv->ok_button, 0);
-        clui_code_dialog_set_ok_button_style(dialog);
+	gtk_widget_set_sensitive(priv->ok_button, 0);
+	clui_code_dialog_set_ok_button_style(dialog);
       }
 
       clui_code_dialog_emit_input_signal(dialog, "BSP");
@@ -393,7 +393,7 @@ clui_code_dialog_button_clicked(GtkButton *button, CluiCodeDialog *data)
 
 static GtkWidget *
 clui_code_dialog_create_number_button(const gchar *number, const gchar *letters,
-                                      CluiCodeDialog *data)
+				      CluiCodeDialog *data)
 {
   GtkWidget *vbox;
   GtkWidget *align;
@@ -403,16 +403,16 @@ clui_code_dialog_create_number_button(const gchar *number, const gchar *letters,
   PangoFontDescription *font;
 
   button = g_object_new(GTK_TYPE_BUTTON,
-                        "focus-on-click", FALSE,
-                        "name", "hildon-dtmf-landscape-dialpad-button",
-                        NULL);
+			"focus-on-click", FALSE,
+			"name", "hildon-dtmf-landscape-dialpad-button",
+			NULL);
 
   gtk_button_set_focus_on_click(GTK_BUTTON(button), FALSE);
-  GTK_OBJECT(button)->flags &= ~GTK_CAN_FOCUS;
+  GTK_WIDGET_UNSET_FLAGS(button->flags, GTK_CAN_FOCUS);
 
   if (number)
     g_object_set_data_full(G_OBJECT(button), "digit", g_strdup(number),
-                           &g_free);
+			   &g_free);
 
   vbox = gtk_vbox_new(0, 0);
   align = g_object_new(GTK_TYPE_ALIGNMENT, NULL);
@@ -420,31 +420,31 @@ clui_code_dialog_create_number_button(const gchar *number, const gchar *letters,
   gtk_alignment_set_padding(GTK_ALIGNMENT(align), 4u, 4u, 8u, 8u);
 
   label_number = g_object_new(GTK_TYPE_LABEL,
-                              "xalign", 0.5,
-                              "yalign", 0.0,
-                              "label", number,
-                              "height-request", 40,
-                              NULL);
+			      "xalign", 0.5,
+			      "yalign", 0.0,
+			      "label", number,
+			      "height-request", 40,
+			      NULL);
 
   font = pango_font_description_from_string("Nokia Sans Bold 35px");
   gtk_widget_modify_font(label_number, font);
   pango_font_description_free(font);
 
   label_letters = g_object_new(GTK_TYPE_LABEL,
-                               "xalign", 0.5,
-                               "yalign", 1.0,
-                               "label", letters,
-                               "height-request", 30,
-                               NULL);
+			       "xalign", 0.5,
+			       "yalign", 1.0,
+			       "label", letters,
+			       "height-request", 30,
+			       NULL);
 
   hildon_helper_set_logical_font(label_letters, "SystemFont");
   hildon_helper_set_logical_color(label_letters, GTK_RC_FG, 0,
-                                  "SecondaryTextColor");
+				  "SecondaryTextColor");
   hildon_helper_set_logical_color(label_letters, GTK_RC_FG, GTK_STATE_PRELIGHT,
-                                  "SecondaryTextColor");
+				  "SecondaryTextColor");
   g_signal_connect_data(G_OBJECT(button), "clicked",
-                        G_CALLBACK(clui_code_dialog_button_clicked),
-                        data, 0, 0);
+			G_CALLBACK(clui_code_dialog_button_clicked),
+			data, 0, 0);
   gtk_box_pack_start_defaults(GTK_BOX(vbox), label_number);
   gtk_box_pack_start_defaults(GTK_BOX(vbox), label_letters);
   gtk_container_add(GTK_CONTAINER(align), vbox);
@@ -457,7 +457,7 @@ clui_code_dialog_create_number_button(const gchar *number, const gchar *letters,
 
 static GObject *
 clui_code_dialog_build(GType type, guint n_construct_properties,
-                       GObjectConstructParam *construct_properties)
+		       GObjectConstructParam *construct_properties)
 {
   //todo
   return NULL;
@@ -480,15 +480,15 @@ clui_code_dialog_class_init(CluiCodeDialogClass *clui)
   widget->unrealize = clui_code_dialog_unrealize;
   GTK_OBJECT_CLASS(clui)->destroy = clui_code_dialog_destroy;
   input_signal = g_signal_new("input", CLUI_TYPE_CODE_DIALOG, G_SIGNAL_RUN_LAST,
-                              0, NULL, NULL,
-                              (GSignalCMarshaller)&g_cclosure_marshal_VOID__POINTER,
-                              G_TYPE_NONE, 1, G_TYPE_POINTER);
+			      0, NULL, NULL,
+			      (GSignalCMarshaller)&g_cclosure_marshal_VOID__POINTER,
+			      G_TYPE_NONE, 1, G_TYPE_POINTER);
   g_object_class_install_property(object, 1,
-                                  g_param_spec_boolean("emergency", "", "", 0,
-                                                       G_PARAM_STATIC_BLURB|
-                                                       G_PARAM_STATIC_NICK|
-                                                       G_PARAM_PRIVATE|
-                                                       G_PARAM_CONSTRUCT_ONLY|
-                                                       G_PARAM_WRITABLE|
-                                                       G_PARAM_READABLE));
+				  g_param_spec_boolean("emergency", "", "", 0,
+						       G_PARAM_STATIC_BLURB|
+						       G_PARAM_STATIC_NICK|
+						       G_PARAM_PRIVATE|
+						       G_PARAM_CONSTRUCT_ONLY|
+						       G_PARAM_WRITABLE|
+						       G_PARAM_READABLE));
 }
