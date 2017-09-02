@@ -25,6 +25,9 @@
 #include <stdarg.h>
 #include <string.h>
 #include <libintl.h>
+
+#include <hildon/hildon-banner.h>
+
 #include "codelockui.h"
 #include "clui-code-dialog.h"
 
@@ -207,9 +210,194 @@ static void codelock_reset_dialog(osso_context_t *osso, CodeLockUI *ui, const gc
 	}
 }
 
-static void codelock_response_signal(GtkDialog *dialog, gint response_id, CodeLockUI *ui)
+static gboolean _codelock_compare_func(gint val1, gint val2, gint val3)
 {
-	//todo
+  gboolean result;
+
+  result = val3 >= val1;
+
+  if (val3 > val2)
+    result = FALSE;
+
+  return result;
+}
+
+static void _codelock_reset_dialog(osso_context_t *osso, CodeLockUI *ui,
+                                   const gchar *title)
+{
+  if (!ui)
+    return;
+
+  if (title)
+    clui_code_dialog_set_title(CLUI_CODE_DIALOG(ui->dialog), title);
+
+  clui_code_dialog_clear_code(CLUI_CODE_DIALOG(ui->dialog));
+  eph_reset();
+}
+
+static void codelock_response_signal(GtkDialog *dialog, gint response_id,
+                                     CodeLockUI *ui)
+{
+  if (!ui)
+          return;
+
+  if (ui->passwd_idx >= 4)
+          return;
+
+  ui->passwd_idx = 0;
+
+  if (response_id == GTK_RESPONSE_CANCEL ||
+      response_id == GTK_RESPONSE_DELETE_EVENT)
+  {
+    hildon_banner_show_information(
+          GTK_WIDGET(gtk_window_get_transient_for(GTK_WINDOW(ui->dialog))),
+          NULL,
+          dgettext("osso-system-lock", "secu_ib_lockcodenotchanged"));
+
+    ui->passwd_idx = 4;
+
+    if (ui->changefunc)
+    {
+      g_signal_handler_disconnect(G_OBJECT(ui->dialog),
+                                  ui->response_signal_handle);
+      ui->response_signal_handle = 0;
+      ui->changefunc(ui, 0);
+    }
+  }
+  else
+  {
+    if (!*clui_code_dialog_get_code(CLUI_CODE_DIALOG(ui->dialog)))
+      return;
+
+    if ( _codelock_compare_func(0, 2, ui->passwd_idx) == 1 )
+    {
+      if (ui->passwd[ui->passwd_idx])
+      {
+        g_free(ui->passwd[ui->passwd_idx]);
+        ui->passwd[ui->passwd_idx] = NULL;
+      }
+
+      ui->passwd[ui->passwd_idx] =
+                      g_strdup(clui_code_dialog_get_code(CLUI_CODE_DIALOG(ui->dialog)));
+    }
+
+    if (ui->passwd_idx == 1)
+    {
+      const char *msgid;
+
+      if ( _codelock_compare_func(0, 2, 1) != 1 || strlen(ui->passwd[1]) > 4 )
+      {
+        msgid = "secu_ti_changelock_3";
+        ui->passwd_idx = 2;
+      }
+      else
+      {
+        hildon_banner_show_information(
+              ui->dialog,
+              NULL,
+              dgettext("osso-system-lock", "secu_ib_lockcodetooshort"));
+
+        msgid = "secu_ti_changelock_2";
+      }
+
+      _codelock_reset_dialog(osso_context, ui,
+                             dgettext("osso-system-lock", msgid));
+    }
+    else
+    {
+      if (ui->passwd_idx != 2)
+      {
+        if (ui->passwd_idx)
+          return;
+
+        if (!ui->passwd[0] || !codelock_is_passwd_correct(ui->passwd[0]))
+        {
+          if (_codelock_compare_func(0, 2, ui->passwd_idx) == 1 &&
+              ui->passwd[ui->passwd_idx])
+          {
+            hildon_banner_show_information(
+                  GTK_WIDGET(gtk_window_get_transient_for(GTK_WINDOW(ui->dialog))),
+                  NULL,
+                  dgettext("osso-system-lock", "secu_info_incorrectcode"));
+
+            g_free(ui->passwd[0]);
+            g_free(ui->passwd[1]);
+            g_free(ui->passwd[2]);
+
+            ui->passwd[0] = 0;
+            ui->passwd[1] = 0;
+            ui->passwd[2] = 0;
+            ui->passwd_idx = 3;
+
+            if (ui->changefunc)
+            {
+              g_signal_handler_disconnect(G_OBJECT(ui->dialog),
+                                          ui->response_signal_handle);
+              ui->response_signal_handle = 0;
+              ui->changefunc(ui, 0);
+            }
+          }
+
+          return;
+        }
+
+        hildon_banner_show_information(
+              ui->dialog,
+              NULL,
+              dgettext("osso-system-lock", "secu_info_codeaccepted"));
+        ++ui->passwd_idx;
+
+reset:
+        _codelock_reset_dialog(osso_context, ui,
+                               dgettext("osso-system-lock",
+                                        "secu_ti_changelock_2"));
+
+        return;
+      }
+
+      if ( _codelock_compare_func(0, 2, 2) == 1 )
+      {
+        if ( strcmp(ui->passwd[2], ui->passwd[1]) )
+        {
+          hildon_banner_show_information(ui->dialog, NULL,
+                                         dgettext("osso-system-lock",
+                                                  "secu_ib_codedonotmatch"));
+          --ui->passwd_idx;
+          goto reset;
+        }
+      }
+
+      if ( !codelock_change_passwd(ui->passwd[0], ui->passwd[2]))
+      {
+        hildon_banner_show_information(ui->dialog, NULL,
+                                       dgettext("osso-system-lock",
+                                                "secu_ib_lockcodenotchanged"));
+
+        ui->passwd_idx = 1;
+        g_free(ui->passwd[1]);
+        g_free(ui->passwd[2]);
+
+        ui->passwd[2] = 0;
+        ui->passwd[1] = 0;
+
+        goto reset;
+      }
+
+      hildon_banner_show_information(
+            GTK_WIDGET(gtk_window_get_transient_for(GTK_WINDOW(ui->dialog))),
+            NULL,
+            dgettext("osso-system-lock", "secu_ib_lockcodechanged"));
+
+      ui->passwd_idx = 4;
+
+      if (ui->changefunc)
+      {
+        g_signal_handler_disconnect(G_OBJECT(ui->dialog), ui->response_signal_handle);
+        ui->response_signal_handle = 0;
+        ui->changefunc(ui, 1);
+      }
+    }
+  }
 }
 
 gboolean codelock_password_change(CodeLockUI *ui, CodeLockChangeFunc func)

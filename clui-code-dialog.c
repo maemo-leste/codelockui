@@ -408,7 +408,7 @@ clui_code_dialog_create_number_button(const gchar *number, const gchar *letters,
 			NULL);
 
   gtk_button_set_focus_on_click(GTK_BUTTON(button), FALSE);
-  GTK_WIDGET_UNSET_FLAGS(button->flags, GTK_CAN_FOCUS);
+  GTK_WIDGET_UNSET_FLAGS(button, GTK_CAN_FOCUS);
 
   if (number)
     g_object_set_data_full(G_OBJECT(button), "digit", g_strdup(number),
