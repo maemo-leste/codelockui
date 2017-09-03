@@ -150,32 +150,34 @@ void codelock_disable_input(CodeLockUI *ui, gboolean disable)
     clui_code_dialog_set_input_sensitive(CLUI_CODE_DIALOG(ui->dialog),!disable);
 }
 
-static gboolean codelock_verify_passwd(const gchar *parameter, const gchar *old_code, const gchar *new_code)
+static gboolean
+codelock_verify_passwd(const gchar *parameter,
+                       const gchar *old_code, const gchar *new_code)
 {
-	__pid_t pid;
-	int stat_loc = 0;
-	pid = fork();
-	if (pid == -1)
-	{
-		return FALSE;
-	}
-	if (!pid)
-	{
-		if (parameter)
-		{
-			execl("/bin/devlocktool", "/bin/devlocktool", parameter, new_code, old_code, NULL);
-		}
-		else
-		{
-			execl("/bin/devlocktool", "/bin/devlocktool", old_code, NULL);
-		}
-		exit(-1);
-	}
-	if (waitpid(pid, &stat_loc, 0) == -1 || stat_loc & 0x7F)
-	{
-		return FALSE;
-	}
-	return (unsigned short)(stat_loc & 0xFF00) == 0x100;
+  __pid_t pid;
+  int status = 0;
+
+  pid = fork();
+
+  if (pid == -1)
+    return FALSE;
+
+  if (!pid)
+  {
+    /* child process */
+    if (parameter)
+      execl("/bin/devlocktool", "/bin/devlocktool", parameter, new_code,
+            old_code, NULL);
+    else
+      execl("/bin/devlocktool", "/bin/devlocktool", old_code, NULL);
+
+    exit(-1);
+  }
+
+  if (waitpid(pid, &status, 0) != -1 && !WTERMSIG(status))
+    return WEXITSTATUS(status) == 1;
+
+  return FALSE;
 }
 
 gboolean codelock_is_passwd_correct(const gchar *pw)

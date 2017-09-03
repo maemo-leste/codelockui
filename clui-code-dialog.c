@@ -359,13 +359,42 @@ clui_code_dialog_im_commit(GtkIMContext *imcontext,
   }
 }
 
+static void clui_code_dialog_backspace(CluiCodeDialog *dialog)
+{
+  CluiCodeDialogPrivate *priv = CLUI_CODE_DIALOG(dialog)->priv;
+  gchar *code;
+  glong len;
+
+  g_assert(priv);
+
+  code = clui_code_dialog_get_code(dialog);
+  len = g_utf8_strlen(code, -1);
+
+  if (len)
+  {
+    code[len - 1] = 0;
+    gtk_editable_delete_text(GTK_EDITABLE(priv->code_entry), len - 1, -1);
+
+    if (!*code || priv->ok_button_disabled)
+    {
+      gtk_widget_set_sensitive(priv->ok_button, FALSE);
+      clui_code_dialog_set_ok_button_style(dialog);
+    }
+
+    clui_code_dialog_emit_input_signal(dialog, "BSP");
+    gtk_editable_set_position(GTK_EDITABLE(priv->code_entry), -1);
+  }
+
+  g_free(code);
+}
+
 static void
 clui_code_dialog_button_clicked(GtkButton *button, CluiCodeDialog *data)
 {
-  GtkWidget *grab = gtk_grab_get_current();
   CluiCodeDialog *dialog = CLUI_CODE_DIALOG(data);
   CluiCodeDialogPrivate *priv = CLUI_CODE_DIALOG(dialog)->priv;
   gchar *digit = g_object_get_data(G_OBJECT(button), "digit");
+  GtkWidget *grab = gtk_grab_get_current();
 
   g_assert(priv);
 
@@ -373,13 +402,11 @@ clui_code_dialog_button_clicked(GtkButton *button, CluiCodeDialog *data)
     gtk_grab_remove(grab);
 
   if (GTK_BUTTON(priv->ok_button) == button)
-  {
-    gtk_dialog_response(GTK_DIALOG(dialog), -6);
-    return;
-  }
-
-  if (priv->emergency_call_button &&
-      GTK_BUTTON(priv->emergency_call_button) == button)
+    gtk_dialog_response(GTK_DIALOG(dialog), GTK_RESPONSE_OK);
+  else if (GTK_BUTTON(priv->cancel_button) == button)
+    gtk_dialog_response(GTK_DIALOG(dialog), GTK_RESPONSE_CANCEL);
+  else if (priv->emergency_call_button &&
+           GTK_BUTTON(priv->emergency_call_button) == button)
   {
     gtk_dialog_response(GTK_DIALOG(dialog), 100);
   }
@@ -389,31 +416,11 @@ clui_code_dialog_button_clicked(GtkButton *button, CluiCodeDialog *data)
     gtk_editable_set_editable(GTK_EDITABLE(priv->code_entry), TRUE);
     g_signal_emit_by_name(GTK_ENTRY(priv->code_entry)->im_context,
                           "commit", digit);
-    gtk_editable_set_editable(GTK_EDITABLE(priv->code_entry), 0);
+    gtk_editable_set_editable(GTK_EDITABLE(priv->code_entry), FALSE);
     gtk_editable_set_position(GTK_EDITABLE(priv->code_entry), -1);
   }
   else
-  {
-    gchar *code = clui_code_dialog_get_code(dialog);
-    glong len = g_utf8_strlen(code, -1);
-
-    if (len)
-    {
-      code[len - 1] = 0;
-      gtk_editable_delete_text(GTK_EDITABLE(priv->code_entry), len - 1, -1);
-
-      if (!*code || (priv->ok_button_disabled = TRUE, !*code))
-      {
-	gtk_widget_set_sensitive(priv->ok_button, 0);
-	clui_code_dialog_set_ok_button_style(dialog);
-      }
-
-      clui_code_dialog_emit_input_signal(dialog, "BSP");
-      gtk_editable_set_position(GTK_EDITABLE(priv->code_entry), -1);
-    }
-
-    g_free(code);
-  }
+    clui_code_dialog_backspace(dialog);
 }
 
 static GtkWidget *
@@ -715,16 +722,21 @@ clui_code_dialog_build(GType type, guint n_construct_properties,
   priv->im_context = gtk_im_multicontext_new();
 
   g_object_set(G_OBJECT(priv->im_context), "hildon-input-mode", 2, NULL);
-  g_signal_connect(G_OBJECT(priv->im_context), "commit", (GCallback)clui_code_dialog_im_commit, dialog);
-  g_signal_connect(G_OBJECT(priv->code_entry), "insert-text", (GCallback)clui_code_dialog_insert_text, dialog);
-  g_signal_connect(G_OBJECT(priv->ok_button), "clicked", (GCallback)clui_code_dialog_button_clicked, dialog);
+  g_signal_connect(G_OBJECT(priv->im_context), "commit",
+                   G_CALLBACK(clui_code_dialog_im_commit), dialog);
+  g_signal_connect(G_OBJECT(priv->code_entry), "insert-text",
+                   G_CALLBACK(clui_code_dialog_insert_text), dialog);
+  g_signal_connect(G_OBJECT(priv->ok_button), "clicked",
+                   G_CALLBACK(clui_code_dialog_button_clicked), dialog);
 
   if (GTK_IS_BUTTON(priv->cancel_button))
-    g_signal_connect(GTK_BUTTON(priv->cancel_button), "clicked", (GCallback)clui_code_dialog_button_clicked, dialog);
+    g_signal_connect(GTK_BUTTON(priv->cancel_button), "clicked",
+                     G_CALLBACK(clui_code_dialog_button_clicked), dialog);
 
 
   if (GTK_IS_BUTTON(priv->emergency_call_button))
-    g_signal_connect(GTK_BUTTON(priv->emergency_call_button), "clicked", (GCallback)clui_code_dialog_button_clicked, dialog);
+    g_signal_connect(GTK_BUTTON(priv->emergency_call_button), "clicked",
+                     G_CALLBACK(clui_code_dialog_button_clicked), dialog);
 
   gtk_widget_show_all(GTK_WIDGET(GTK_DIALOG(dialog)->vbox));
   gtk_widget_show_all(GTK_WIDGET(GTK_DIALOG(dialog)->action_area));
@@ -733,7 +745,8 @@ clui_code_dialog_build(GType type, guint n_construct_properties,
   if (priv->emergency_call_button)
   {
     g_object_ref(priv->emergency_call_button);
-    gtk_container_remove(GTK_CONTAINER(priv->vbox), priv->emergency_call_button);
+    gtk_container_remove(GTK_CONTAINER(priv->vbox),
+                         priv->emergency_call_button);
   }
 
   return object;
