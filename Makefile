@@ -1,7 +1,7 @@
 all: libcodelockui.so.1.0.0
 
 libcodelockui.so.1.0.0: codelockui.c codelockui.h clui-code-dialog.c clui-code-dialog.h
-	$(CC) -Wall $(CFLAGS) $(shell pkg-config --cflags --libs glib-2.0 gtk+-2.0 libosso dbus-1 dbus-glib-1 hildon-1) --std=gnu99 -shared -Wl,-soname=libcodelockui.so.1 $^ -o $@
+	$(CC) -Wall -fPIC $(CFLAGS) $(shell pkg-config --cflags --libs glib-2.0 gtk+-2.0 libosso dbus-1 dbus-glib-1 hildon-1) --std=gnu99 -shared -Wl,-soname=libcodelockui.so.1 $^ -o $@
 
 clean:
 	$(RM) libcodelockui.so.1.0.0
