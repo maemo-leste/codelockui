@@ -130,33 +130,24 @@ void codelock_clear_code(CodeLockUI *ui)
 
 static gboolean code_entry_timeout_cb(CodeLockUI *ui)
 {
-	ui->entry_event_id = 0;
-	clui_code_dialog_clear_code(CLUI_CODE_DIALOG(ui->dialog));
-	eph_reset();
-	return FALSE;
+  ui->entry_event_id = 0;
+  clui_code_dialog_clear_code(CLUI_CODE_DIALOG(ui->dialog));
+  eph_reset();
+  return FALSE;
 }
 
 const gchar* codelock_get_code(CodeLockUI *ui)
 {
-	if (ui)
-	{
-		if (ui->dialog)
-		{
-			return clui_code_dialog_get_code(CLUI_CODE_DIALOG(ui->dialog));
-		}
-	}
-	return NULL;
+  if (ui && ui->dialog)
+    return clui_code_dialog_get_code(CLUI_CODE_DIALOG(ui->dialog));
+
+  return NULL;
 }
 
 void codelock_disable_input(CodeLockUI *ui, gboolean disable)
 {
-	if (ui)
-	{
-		if (ui->dialog)
-		{
-			clui_code_dialog_set_input_sensitive(CLUI_CODE_DIALOG(ui->dialog),!disable);
-		}
-	}
+  if (ui && ui->dialog)
+    clui_code_dialog_set_input_sensitive(CLUI_CODE_DIALOG(ui->dialog),!disable);
 }
 
 static gboolean codelock_verify_passwd(const gchar *parameter, const gchar *old_code, const gchar *new_code)
@@ -210,18 +201,6 @@ static void codelock_reset_dialog(osso_context_t *osso, CodeLockUI *ui, const gc
 	}
 }
 
-static gboolean _codelock_compare_func(gint val1, gint val2, gint val3)
-{
-  gboolean result;
-
-  result = val3 >= val1;
-
-  if (val3 > val2)
-    result = FALSE;
-
-  return result;
-}
-
 static void _codelock_reset_dialog(osso_context_t *osso, CodeLockUI *ui,
                                    const gchar *title)
 {
@@ -269,7 +248,7 @@ static void codelock_response_signal(GtkDialog *dialog, gint response_id,
     if (!*clui_code_dialog_get_code(CLUI_CODE_DIALOG(ui->dialog)))
       return;
 
-    if ( _codelock_compare_func(0, 2, ui->passwd_idx) == 1 )
+    if (codelock_compare_func(0, 2, ui->passwd_idx) == 1)
     {
       if (ui->passwd[ui->passwd_idx])
       {
@@ -285,7 +264,7 @@ static void codelock_response_signal(GtkDialog *dialog, gint response_id,
     {
       const char *msgid;
 
-      if ( _codelock_compare_func(0, 2, 1) != 1 || strlen(ui->passwd[1]) > 4 )
+      if (codelock_compare_func(0, 2, 1) != 1 || strlen(ui->passwd[1]) > 4)
       {
         msgid = "secu_ti_changelock_3";
         ui->passwd_idx = 2;
@@ -312,7 +291,7 @@ static void codelock_response_signal(GtkDialog *dialog, gint response_id,
 
         if (!ui->passwd[0] || !codelock_is_passwd_correct(ui->passwd[0]))
         {
-          if (_codelock_compare_func(0, 2, ui->passwd_idx) == 1 &&
+          if (codelock_compare_func(0, 2, ui->passwd_idx) == 1 &&
               ui->passwd[ui->passwd_idx])
           {
             hildon_banner_show_information(
@@ -355,7 +334,7 @@ reset:
         return;
       }
 
-      if ( _codelock_compare_func(0, 2, 2) == 1 )
+      if (codelock_compare_func(0, 2, 2) == 1)
       {
         if ( strcmp(ui->passwd[2], ui->passwd[1]) )
         {

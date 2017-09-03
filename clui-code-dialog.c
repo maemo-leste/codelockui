@@ -139,7 +139,8 @@ clui_code_dialog_set_ok_button_style(CluiCodeDialog *dialog)
   if (GTK_WIDGET_SENSITIVE(priv->ok_button) &&
       GTK_WIDGET_PARENT_SENSITIVE(priv->ok_button))
   {
-    g_object_set(G_OBJECT(priv->ok_button), "name", "hildon-dtmf-back-button",
+    g_object_set(G_OBJECT(priv->ok_button),
+                 "name", "hildon-dtmf-back-button",
 		 NULL);
   }
   else
@@ -150,7 +151,29 @@ void
 clui_code_dialog_set_input_sensitive(CluiCodeDialog *dialog,
 				     gboolean sensitive)
 {
-  //todo
+  CluiCodeDialogPrivate *priv;
+  int i;
+
+  g_return_if_fail(CLUI_IS_CODE_DIALOG(dialog));
+
+  priv = CLUI_CODE_DIALOG(dialog)->priv;
+  g_assert(priv);
+
+  for (i = 0; i < 12; i++)
+  {
+    if (i == 7)
+      continue;
+
+    gtk_widget_set_sensitive(GTK_WIDGET(priv->buttons[i]), sensitive);
+  }
+
+  gtk_widget_set_sensitive(priv->code_entry, sensitive);
+
+  if (priv->cancel_button)
+    gtk_widget_set_sensitive(priv->cancel_button, sensitive);
+
+  if (priv->emergency_call_button)
+    gtk_widget_set_sensitive(priv->emergency_call_button, sensitive);
 }
 
 void
@@ -193,8 +216,9 @@ clui_code_dialog_get_code(CluiCodeDialog *dialog)
 GtkWidget *
 clui_code_dialog_new(gboolean emergency_enabled)
 {
-  return (GtkWidget *)g_object_new(CLUI_TYPE_CODE_DIALOG, "emergency",
-				   emergency_enabled, NULL);
+  return (GtkWidget *)g_object_new(CLUI_TYPE_CODE_DIALOG,
+                                   "emergency", emergency_enabled,
+                                   NULL);
 }
 
 static void
@@ -321,16 +345,16 @@ clui_code_dialog_insert_text(GtkEditable *editable, gchar *new_text,
 
 static void
 clui_code_dialog_im_commit(GtkIMContext *imcontext,
-			   gchar *arg1, CluiCodeDialog *dialog)
+                           gchar *arg1, CluiCodeDialog *dialog)
 {
   CluiCodeDialogPrivate *priv = CLUI_CODE_DIALOG(dialog)->priv;
   g_assert(priv);
-
   if (g_ascii_isdigit(*arg1))
   {
-    gtk_editable_set_editable(GTK_EDITABLE(priv->code_entry), 1);
-    g_signal_emit_by_name(GTK_ENTRY(priv->code_entry),"commit", arg1);
-    gtk_editable_set_editable(GTK_EDITABLE(priv->code_entry), 0);
+    gtk_editable_set_editable(GTK_EDITABLE(priv->code_entry), TRUE);
+    g_signal_emit_by_name(GTK_ENTRY(priv->code_entry)->im_context,
+                          "commit", arg1);
+    gtk_editable_set_editable(GTK_EDITABLE(priv->code_entry), FALSE);
     gtk_editable_set_position(GTK_EDITABLE(priv->code_entry), -1);
   }
 }
@@ -341,7 +365,7 @@ clui_code_dialog_button_clicked(GtkButton *button, CluiCodeDialog *data)
   GtkWidget *grab = gtk_grab_get_current();
   CluiCodeDialog *dialog = CLUI_CODE_DIALOG(data);
   CluiCodeDialogPrivate *priv = CLUI_CODE_DIALOG(dialog)->priv;
-  gchar *digit = g_object_get_data(G_OBJECT(button),"digit");
+  gchar *digit = g_object_get_data(G_OBJECT(button), "digit");
 
   g_assert(priv);
 
@@ -362,15 +386,16 @@ clui_code_dialog_button_clicked(GtkButton *button, CluiCodeDialog *data)
   else if (digit && *digit)
   {
     priv->ok_button_disabled = FALSE;
-    gtk_editable_set_editable(GTK_EDITABLE(priv->code_entry), 1);
-    g_signal_emit_by_name(GTK_ENTRY(priv->code_entry), "commit", digit);
+    gtk_editable_set_editable(GTK_EDITABLE(priv->code_entry), TRUE);
+    g_signal_emit_by_name(GTK_ENTRY(priv->code_entry)->im_context,
+                          "commit", digit);
     gtk_editable_set_editable(GTK_EDITABLE(priv->code_entry), 0);
     gtk_editable_set_position(GTK_EDITABLE(priv->code_entry), -1);
   }
   else
   {
     gchar *code = clui_code_dialog_get_code(dialog);
-    glong len = g_utf8_strlen(code,-1);
+    glong len = g_utf8_strlen(code, -1);
 
     if (len)
     {
@@ -455,12 +480,263 @@ clui_code_dialog_create_number_button(const gchar *number, const gchar *letters,
   return (GtkWidget *)button;
 }
 
+struct button_strings
+{
+  const gchar *number;
+  const gchar *letters;
+};
+
+static struct button_strings button_string_array[10] =
+{
+  { "0", "" },
+  { "1", "" },
+  { "2", "abc" },
+  { "3", "def" },
+  { "4", "ghi" },
+  { "5", "jkl" },
+  { "6", "mno" },
+  { "7", "pqrs" },
+  { "8", "tuv" },
+  { "9", "wxyz" }
+};
+
 static GObject *
 clui_code_dialog_build(GType type, guint n_construct_properties,
-		       GObjectConstructParam *construct_properties)
+                       GObjectConstructParam *construct_properties)
 {
-  //todo
-  return NULL;
+  GObjectClass *object_class;
+  CluiCodeDialogPrivate *priv;
+  GtkWidget *vbox;
+  GtkWidget *align;
+  PangoFontDescription *font;
+  guint right;
+  guint bottom;
+  GtkWidget **buttons;
+  struct button_strings *v47;
+  guint col;
+  GtkWidget *child;
+  GtkIconTheme *icon_theme;
+  GtkIconInfo *bs_icon_info;
+  GdkPixbuf *bs_icon;
+  GtkWidget *bs_image;
+  GtkWidget *v69;
+  GtkWidget *em_call_label;
+  GtkWidget *call_icon;
+  GtkWidget *hbox;
+  GtkWidget *align_1;
+  CluiCodeDialog *dialog;
+  GObject *object;
+  GtkWidget *table;
+  guint row;
+  int i;
+
+  object_class = G_OBJECT_CLASS(clui_code_dialog_parent_dialog);
+  object = object_class->constructor(type, n_construct_properties, construct_properties);
+
+  dialog = CLUI_CODE_DIALOG(object);
+  priv = CLUI_CODE_DIALOG(dialog)->priv;
+
+  g_assert(priv);
+
+  priv->ok_button_disabled = FALSE;
+
+  gtk_window_set_title(GTK_WINDOW(dialog),
+                       dgettext("osso-system-lock", "secu_application_title"));
+  gtk_window_set_type_hint(GTK_WINDOW(dialog), GDK_WINDOW_TYPE_HINT_DIALOG);
+  gtk_dialog_set_padding(GTK_DIALOG(dialog), 0, 0, 0, 0);
+  gtk_dialog_set_inner_spacing(GTK_DIALOG(dialog), 0);
+  gtk_dialog_set_has_separator(GTK_DIALOG(dialog), 0);
+  gtk_rc_parse_string("style \"fremantle-widget\" {\n  GtkWidget::hildon-mode = 1\n} widget \"*.fremantle-widget\" style \"fremantle-widget\"class \"GtkEntry\" style \"fremantle-widget\"widget_class \"*.GtkEntry.*\" style \"fremantle-widget\"");
+  gtk_rc_parse_string("style \"clui-code-dialog\" {\n CluiCodeDialog::action-area-border = 0\n CluiCodeDialog::contents-area-border = 0\n} widget \"*.clui-code-dialog\" style \"clui-code-dialog\"class \"CluiCodeDialog\" style \"clui-code-dialog\"widget_class \"*.CluiCodeDialog.*\" style \"clui-code-dialog\"");
+
+  table = gtk_table_new(3, 4, 0);
+  row = 0;
+  i = 0;
+
+  vbox = gtk_vbox_new(0, 0);
+  align = gtk_alignment_new(0.0, 0.0, 1.0, 1.0);
+  gtk_alignment_set_padding(GTK_ALIGNMENT(align), 4u, 0xCu, 0xCu, 0);
+
+  priv->code_entry = gtk_entry_new();
+  gtk_entry_set_max_length(GTK_ENTRY(priv->code_entry), 10);
+
+  gtk_rc_parse_string("style \"pincode-entry\" = \"osso-color-themeing\" {\t\n        xthickness = 16\t\n        ythickness = 0\t\n        GtkWidget::interior-focus = 1\t\n        GtkEntry::inner-border = { 0, 0, 16, 16 }\t\n        GtkEntry::state-hint = 1\t\n        # We need to change the logical colour, because otherwise HildonEntry\t\n        # will override the specified colour.\t\n        color[\"ReversedTextColor\"] = @DefaultTextColor\t\n        engine \"sapwood\" {\t\n                image {\t\n                        function = SHADOW\t\n                        file = \"../images/CallEntry.png\"\t\n                        border = { 16, 16, 16, 16 }\t\n                }\t\n                image {\t\n                        function = FLAT_BOX\t\n                        shadow = NONE\t\n                        file = \"../images/CallEntryCenter.png\"\t\n                        border = { 12, 12, 16, 16 }\t\n                }\t\n        }\t\n}\t\nwidget \"*.pincode-entry\" style \"pincode-entry\"\t\n");
+
+  g_object_set(G_OBJECT(priv->code_entry), "can-focus", FALSE,
+               "name", "pincode-entry", NULL);
+  GTK_WIDGET_UNSET_FLAGS(priv->code_entry, GTK_CAN_FOCUS);
+
+  gtk_entry_set_invisible_char(GTK_ENTRY(priv->code_entry),
+                                         g_utf8_get_char("*"));
+  gtk_entry_set_alignment(GTK_ENTRY(priv->code_entry), 0.0);
+  gtk_editable_set_editable(GTK_EDITABLE(priv->code_entry), 0);
+  gtk_entry_set_visibility(GTK_ENTRY(priv->code_entry), 0);
+  gtk_widget_set_size_request(priv->code_entry, 520, 81);
+
+  font = pango_font_description_from_string("Nokia Sans Bold 48px");
+  gtk_widget_modify_font(priv->code_entry, font);
+  pango_font_description_free(font);
+
+  gtk_box_pack_start(GTK_BOX(vbox), priv->code_entry, 1, 1, 0);
+  gtk_box_pack_start(GTK_BOX(vbox), table, 1, 1, 0);
+  gtk_container_add(GTK_CONTAINER(align), vbox);
+
+  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox), align, 1, 1, 0);
+
+  do
+  {
+    right = 0;
+    bottom = row + 1;
+    buttons = &priv->buttons[4 * row];
+    do
+    {
+      v47 = &button_string_array[i + right + 1];
+      col = right++;
+      *buttons = clui_code_dialog_create_number_button(v47->number, v47->letters, dialog);
+      child = *buttons;
+      ++buttons;
+      gtk_table_attach(GTK_TABLE(table), child, col, right, row, bottom,
+                       GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND, 0, 0);
+    }
+    while ( right != 3 );
+
+    ++row;
+    i += 3;
+  }
+  while ( bottom != 3 );
+
+  priv->buttons[3] = g_object_new(GTK_TYPE_BUTTON, "can-focus", FALSE, NULL);
+
+  gtk_button_set_focus_on_click(GTK_BUTTON(priv->buttons[3]), FALSE);
+  GTK_WIDGET_UNSET_FLAGS(priv->buttons[3], GTK_CAN_FOCUS);
+
+  gtk_widget_set_size_request(priv->buttons[3], 130, 90);
+
+  gtk_table_attach(GTK_TABLE(table), priv->buttons[3], 3, 4, 0, 1,
+                   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND, 0, 0);
+
+  /* BS button */
+  icon_theme = gtk_icon_theme_get_default();
+  bs_icon_info = gtk_icon_theme_lookup_icon(icon_theme, "general_backspace", 1,
+                                            GTK_ICON_LOOKUP_NO_SVG);
+  bs_icon = gtk_icon_theme_load_icon(
+        icon_theme, "general_backspace",
+        gtk_icon_info_get_base_size(bs_icon_info), GTK_ICON_LOOKUP_NO_SVG, 0);
+  gtk_icon_info_free(bs_icon_info);
+
+  bs_image = gtk_image_new_from_pixbuf(bs_icon);
+  g_object_unref(G_OBJECT(bs_icon));
+  gtk_container_add(GTK_CONTAINER(priv->buttons[3]), bs_image);
+  g_signal_connect(G_OBJECT(priv->buttons[3]), "clicked",
+                   G_CALLBACK(clui_code_dialog_button_clicked), dialog);
+
+  priv->buttons[7] = NULL;
+
+  /* '0' button */
+  priv->buttons[11] = clui_code_dialog_create_number_button("0", "", dialog);
+  gtk_widget_set_size_request(priv->buttons[11], 130, 90);
+  gtk_table_attach(GTK_TABLE(table), priv->buttons[11], 3, 4, 2, 3,
+                   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND, 0, 0);
+  gtk_button_box_set_layout(GTK_BUTTON_BOX(GTK_DIALOG(dialog)->action_area),
+                            GTK_BUTTONBOX_END);
+  /* WTF? */
+  gtk_hbox_new(0, 0);
+
+  v69 = gtk_alignment_new(1.0, 1.0, 0.0, 0.0);
+  gtk_alignment_set_padding(GTK_ALIGNMENT(v69), 0, 12, 0, 12);
+
+  priv->vbox = gtk_vbox_new(0, 0);
+
+  gtk_box_set_spacing(GTK_BOX(priv->vbox), 0);
+
+  priv->cancel_button = g_object_new(GTK_TYPE_BUTTON, "focus-on-click", FALSE,
+                                     "name", "hildon-dtmf-back-button",
+                                     "label", "", NULL);
+  gtk_widget_set_size_request(priv->cancel_button, 240, 90);
+  gtk_button_set_focus_on_click(GTK_BUTTON(priv->cancel_button), 0);
+  GTK_WIDGET_UNSET_FLAGS(priv->cancel_button, GTK_CAN_FOCUS);
+  g_object_ref(priv->cancel_button);
+
+  priv->ok_button =
+      g_object_new(GTK_TYPE_BUTTON,
+                   "focus-on-click", FALSE,
+                   "label", dgettext("hildon-libs", "wdgt_bd_done"),
+                   NULL);
+
+  gtk_widget_set_size_request(priv->ok_button, 240, 90);
+  gtk_button_set_focus_on_click(GTK_BUTTON(priv->ok_button), FALSE);
+  GTK_WIDGET_UNSET_FLAGS(priv->ok_button, GTK_CAN_FOCUS);
+  gtk_widget_set_sensitive(priv->ok_button, 0);
+
+  gtk_box_pack_end(GTK_BOX(priv->vbox), priv->ok_button, 0, 1, 0);
+
+  if (priv->emergency)
+  {
+
+    em_call_label =
+        g_object_new(GTK_TYPE_LABEL,
+                     "label", dgettext("osso-system-lock",
+                                       "secu_lock_code_dialog_emergency_call"),
+                     "xalign", 0.0f,
+                     "wrap", TRUE,
+                     "wrap-mode", 0,
+                     "width-request", 130,
+                     NULL);
+
+    call_icon = g_object_new(GTK_TYPE_IMAGE,
+                             "icon-name", "general_call",
+                             "pixel-size", 64,
+                             "xalign", 0.5f,
+                             NULL);
+
+    priv->emergency_call_button =
+        g_object_new(GTK_TYPE_BUTTON,
+                     "can-focus", FALSE,
+                     "focus-on-click", FALSE,
+                     "width-request", 240,
+                     "height-request", 90,
+                     "name", "hildon-dtmf-back-button",
+                     NULL);
+    hbox = gtk_hbox_new(0, 16);
+    align_1 = gtk_alignment_new(0.5, 0.5, 0.0, 0.0);
+
+    gtk_box_pack_start(GTK_BOX(hbox), call_icon, 1, 1, 0);
+    gtk_box_pack_start(GTK_BOX(hbox), em_call_label, 1, 1, 0);
+    gtk_container_add(GTK_CONTAINER(align_1), hbox);
+    gtk_container_add(GTK_CONTAINER(priv->emergency_call_button), align_1);
+    g_object_ref(priv->emergency_call_button);
+    gtk_box_pack_end(GTK_BOX(priv->vbox), priv->emergency_call_button, 0, 1, 0);
+  }
+
+  gtk_container_add(GTK_CONTAINER(v69), priv->vbox);
+  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->action_area), v69, 0, 1, 0);
+
+  priv->vbox = priv->vbox;
+  priv->im_context = gtk_im_multicontext_new();
+
+  g_object_set(G_OBJECT(priv->im_context), "hildon-input-mode", 2, NULL);
+  g_signal_connect(G_OBJECT(priv->im_context), "commit", (GCallback)clui_code_dialog_im_commit, dialog);
+  g_signal_connect(G_OBJECT(priv->code_entry), "insert-text", (GCallback)clui_code_dialog_insert_text, dialog);
+  g_signal_connect(G_OBJECT(priv->ok_button), "clicked", (GCallback)clui_code_dialog_button_clicked, dialog);
+
+  if (GTK_IS_BUTTON(priv->cancel_button))
+    g_signal_connect(GTK_BUTTON(priv->cancel_button), "clicked", (GCallback)clui_code_dialog_button_clicked, dialog);
+
+
+  if (GTK_IS_BUTTON(priv->emergency_call_button))
+    g_signal_connect(GTK_BUTTON(priv->emergency_call_button), "clicked", (GCallback)clui_code_dialog_button_clicked, dialog);
+
+  gtk_widget_show_all(GTK_WIDGET(GTK_DIALOG(dialog)->vbox));
+  gtk_widget_show_all(GTK_WIDGET(GTK_DIALOG(dialog)->action_area));
+
+
+  if (priv->emergency_call_button)
+  {
+    g_object_ref(priv->emergency_call_button);
+    gtk_container_remove(GTK_CONTAINER(priv->vbox), priv->emergency_call_button);
+  }
+
+  return object;
 }
 
 void
