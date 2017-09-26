@@ -383,37 +383,46 @@ reset:
 
 gboolean codelock_password_change(CodeLockUI *ui, CodeLockChangeFunc func)
 {
-	if (ui)
-	{
-		ui->response_signal_handle = g_signal_connect_data(G_OBJECT(ui->dialog),"response",G_CALLBACK(codelock_response_signal),ui,NULL,0);
-		codelock_reset_dialog(osso_context,ui,dcgettext("osso-system-lock", "secu_ti_changelock_1", 5));
-		ui->passwd_idx = 0;
-		ui->changefunc = func;
-		if (func)
-		{
-			gint idx = 0;
-			gint response = -1;
-			while (idx <= 3 || response == -4)
-			{
-				response = gtk_dialog_run(GTK_DIALOG(ui->dialog));
-				if (response != -6 && response != -4)
-				{
-					idx = ui->passwd_idx;
-					if (idx != 3)
-					{
-						continue;
-					}
-				}
-				g_signal_handler_disconnect(G_OBJECT(ui->dialog),ui->response_signal_handle);
-				ui->response_signal_handle = 0;
-				return FALSE;
-			}
-			g_signal_handler_disconnect(G_OBJECT(ui->dialog),ui->response_signal_handle);
-			ui->response_signal_handle = 0;
-			return TRUE;
-		}
-	}
-	return FALSE;
+  if (ui)
+  {
+    ui->response_signal_handle =
+        g_signal_connect(G_OBJECT(ui->dialog), "response",
+                         G_CALLBACK(codelock_response_signal), ui);
+    codelock_reset_dialog(osso_context, ui, dgettext("osso-system-lock",
+                                                     "secu_ti_changelock_1"));
+    ui->passwd_idx = 0;
+    ui->changefunc = func;
+
+    if (func)
+    {
+      gint idx = 0;
+      gint response = -1;
+
+      while (idx <= 3 || response == -4)
+      {
+        response = gtk_dialog_run(GTK_DIALOG(ui->dialog));
+
+        if (response != -6 && response != -4)
+        {
+          idx = ui->passwd_idx;
+
+          if (idx != 3)
+            continue;
+        }
+
+        g_signal_handler_disconnect(G_OBJECT(ui->dialog),
+                                    ui->response_signal_handle);
+        ui->response_signal_handle = 0;
+        return FALSE;
+      }
+
+      g_signal_handler_disconnect(G_OBJECT(ui->dialog),
+                                  ui->response_signal_handle);
+      ui->response_signal_handle = 0;
+      return TRUE;
+    }
+  }
+  return FALSE;
 }
 
 static gboolean key_press_event_cb(GtkDialog *dialog, GdkEventKey *event, gpointer user_data)
