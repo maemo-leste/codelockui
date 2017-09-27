@@ -41,7 +41,7 @@ binary: build install
 	dh_installdocs
 	dh_installchangelogs
 	dh_link
-	dh_strip
+	dh_strip --dbg-package=libcodelockui1-dbg
 	dh_compress
 	dh_fixperms
 	dh_makeshlibs
