@@ -1,3 +1,9 @@
+codelockui (1:1.6.19) unstable; urgency=low
+
+  * First functional RE release
+
+ -- Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>  Wed, 27 Sep 2017 15:06:28 +0300
+
 codelockui (1:1.6.18) unstable; urgency=low
 
   * Initial release of reverse engineered clone
