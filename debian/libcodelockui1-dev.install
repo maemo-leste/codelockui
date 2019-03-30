@@ -1,3 +1,3 @@
-debian/tmp/usr/include/*
-debian/tmp/usr/lib/pkgconfig/*
-debian/tmp/usr/lib/libcodelockui.so usr/lib/
+usr/include/*
+usr/lib/pkgconfig/*
+usr/lib/libcodelockui.so

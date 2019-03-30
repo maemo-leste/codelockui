@@ -2,7 +2,7 @@ Source: codelockui
 Section: libs
 Priority: extra
 Maintainer: Jonathan Wilson <jfwfreo@tpgi.com.au>
-Build-Depends: debhelper (>= 5), cdbs, libhildon1-dev, libgtk2.0-dev, libglib2.0-dev, libdbus-glib-1-dev, libosso-dev
+Build-Depends: debhelper (>= 10), libhildon1-dev, libgtk2.0-dev, libglib2.0-dev, libdbus-glib-1-dev, libosso-dev
 
 Package: libcodelockui1
 Section: libs
@@ -19,11 +19,3 @@ Architecture: all
 Depends: libcodelockui1 (= ${binary:Version}), pkg-config
 Description: Headers for a code lock ui library.
  This package contains headers for using the code lock UI library.
-
-Package: libcodelockui1-dbg
-Section: devel
-Priority: extra
-Architecture: any
-Depends: libcodelockui1 (= ${binary:Version}), pkg-config
-Description: Debug symbols for code lock UI library
- Debug symbols for code lock UI library.

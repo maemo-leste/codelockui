@@ -1,3 +1,9 @@
+codelockui (1:1.6.20) unstable; urgency=medium
+
+  * Port to debhelper 10
+
+ -- Ivan J. <parazyd@dyne.org>  Sat, 30 Mar 2019 13:01:33 +0100
+
 codelockui (1:1.6.19) unstable; urgency=low
 
   * First functional RE release
